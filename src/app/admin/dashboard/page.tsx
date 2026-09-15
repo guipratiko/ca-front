@@ -109,11 +109,21 @@ export default function DashboardPage() {
               </div>
               <div className="flex gap-2">
                 <Link
-                  href={`/artigos/${a.id}`}
+                  href={`/admin/artigos/${a.id}`}
                   className="h-9 px-3 rounded-lg border border-[var(--line)] inline-flex items-center gap-1.5 text-sm font-semibold"
                 >
                   <Pencil size={14} /> Editar
                 </Link>
+                {a.status === "PUBLISHED" && a.slug ? (
+                  <a
+                    href={`/post.html?p=${encodeURIComponent(a.slug)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-9 px-3 rounded-lg border border-[var(--line)] inline-flex items-center text-sm font-semibold"
+                  >
+                    Ver
+                  </a>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => onDelete(a.id, a.title)}
