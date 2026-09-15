@@ -2,10 +2,16 @@
 
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Product, formatBRL, productGallery, productWhatsAppUrl } from "@/lib/api";
+import { Product, formatBRL, productGallery } from "@/lib/api";
 
-/** Faixa horizontal de cards — inspirado no Carousel Cards (21st / kokonutd). */
-export function ProductShowcaseCarousel({ products }: { products: Product[] }) {
+/** Faixa horizontal de cards - inspirado no Carousel Cards (21st / kokonutd). */
+export function ProductShowcaseCarousel({
+  products,
+  onSelect,
+}: {
+  products: Product[];
+  onSelect?: (product: Product) => void;
+}) {
   const scroller = useRef<HTMLDivElement>(null);
 
   if (!products.length) return null;
@@ -22,10 +28,26 @@ export function ProductShowcaseCarousel({ products }: { products: Product[] }) {
           <h2>Escolhas da bancada</h2>
         </div>
         <div className="prod-strip__controls">
-          <button type="button" className="prod-strip__btn" aria-label="Anterior" onClick={() => scrollBy(-1)}>
+          <button
+            type="button"
+            className="prod-strip__btn"
+            aria-label="Anterior"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollBy(-1);
+            }}
+          >
             <ChevronLeft size={18} />
           </button>
-          <button type="button" className="prod-strip__btn" aria-label="Próximo" onClick={() => scrollBy(1)}>
+          <button
+            type="button"
+            className="prod-strip__btn"
+            aria-label="Próximo"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollBy(1);
+            }}
+          >
             <ChevronRight size={18} />
           </button>
         </div>
@@ -35,7 +57,19 @@ export function ProductShowcaseCarousel({ products }: { products: Product[] }) {
         {products.map((p) => {
           const imgs = productGallery(p);
           return (
-            <article key={p.id} className="prod-strip__card">
+            <article
+              key={p.id}
+              className="prod-strip__card"
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelect?.(p)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect?.(p);
+                }
+              }}
+            >
               <div className="prod-strip__media">
                 {imgs[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -50,14 +84,9 @@ export function ProductShowcaseCarousel({ products }: { products: Product[] }) {
                 <h3>{p.name}</h3>
                 {p.reference ? <p className="prod-strip__ref">Ref: {p.reference}</p> : null}
                 <strong>{formatBRL(p.price)}</strong>
-                <a
-                  className="btn btn--primary btn--sm"
-                  href={productWhatsAppUrl(p)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {p.buttonLabel || "Quero este"}
-                </a>
+                <span className="btn btn--primary btn--sm" aria-hidden="true">
+                  Ver detalhes
+                </span>
               </div>
             </article>
           );

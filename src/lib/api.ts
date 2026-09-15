@@ -122,7 +122,7 @@ export function productsWhatsAppUrl(message?: string): string {
   return `https://wa.me/${PRODUCTS_WHATSAPP}?text=${encodeURIComponent(text)}`;
 }
 
-/** Base da API — definida em `.env` / EasyPanel como NEXT_PUBLIC_API_URL */
+/** Base da API  -  definida em `.env` / EasyPanel como NEXT_PUBLIC_API_URL */
 function resolveApiUrl() {
   const raw = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, "");
   // Evita Mixed Content: página HTTPS não pode chamar API em HTTP

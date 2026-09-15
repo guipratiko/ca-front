@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-/** Carrossel com thumbs — inspirado no Thumbnail Slider (21st / Embla pattern). */
+/** Carrossel com thumbs  -  inspirado no Thumbnail Slider (21st / Embla pattern). */
 export function ProductImageCarousel({
   images,
   alt,
@@ -35,7 +35,11 @@ export function ProductImageCarousel({
   };
 
   return (
-    <div className="prod-gallery">
+    <div
+      className="prod-gallery"
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       <div
         className="prod-gallery__stage"
         onTouchStart={(e) => {

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteChrome } from "@/components/site-chrome";
 import { ProductImageCarousel } from "@/components/product-image-carousel";
 import { ProductShowcaseCarousel } from "@/components/product-showcase-carousel";
+import { ProductModal } from "@/components/product-modal";
 import {
   Category,
   Product,
@@ -11,7 +12,6 @@ import {
   listPublicCategories,
   listPublicProducts,
   productGallery,
-  productWhatsAppUrl,
   productsWhatsAppUrl,
 } from "@/lib/api";
 import "./produtos.css";
@@ -19,8 +19,8 @@ import "./produtos.css";
 const PRICE_PRESETS = [
   { id: "all", label: "Qualquer preço", min: undefined, max: undefined },
   { id: "0-100", label: "Até R$ 100", min: 0, max: 100 },
-  { id: "100-300", label: "R$ 100 – 300", min: 100, max: 300 },
-  { id: "300-600", label: "R$ 300 – 600", min: 300, max: 600 },
+  { id: "100-300", label: "R$ 100 a 300", min: 100, max: 300 },
+  { id: "300-600", label: "R$ 300 a 600", min: 300, max: 600 },
   { id: "600+", label: "Acima de R$ 600", min: 600, max: undefined },
 ] as const;
 
@@ -33,6 +33,7 @@ export default function ProdutosPage() {
   const [pricePreset, setPricePreset] = useState<(typeof PRICE_PRESETS)[number]["id"]>("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [selected, setSelected] = useState<Product | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,7 +128,7 @@ export default function ProdutosPage() {
             </h1>
             <p className="lead">
               Kits, ferramentas e itens selecionados para quem está começando ou evoluindo na
-              manutenção de celulares — no mesmo padrão visual do site.
+              manutenção de celulares, no mesmo padrão visual do site.
             </p>
             <div className="prod-hero__cta">
               <a className="btn btn--primary btn--lg" href="#vitrine">
@@ -152,7 +153,7 @@ export default function ProdutosPage() {
           {error ? <p className="prod-status prod-status--error">{error}</p> : null}
 
           {!loading && featured.length > 0 ? (
-            <ProductShowcaseCarousel products={featured} />
+            <ProductShowcaseCarousel products={featured} onSelect={setSelected} />
           ) : null}
 
           {!loading && !error && products.length > 0 ? (
@@ -260,7 +261,19 @@ export default function ProdutosPage() {
               const images = productGallery(p);
               const catLabel = p.categoryRef?.name || p.category;
               return (
-                <article key={p.id} className="prod-card">
+                <article
+                  key={p.id}
+                  className="prod-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelected(p)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelected(p);
+                    }
+                  }}
+                >
                   <ProductImageCarousel images={images} alt={p.name} />
                   <div className="prod-card__body">
                     <div className="prod-card__meta">
@@ -278,14 +291,9 @@ export default function ProdutosPage() {
                     {p.reference ? (
                       <p className="prod-card__ref">Ref: {p.reference}</p>
                     ) : null}
-                    <a
-                      className="btn btn--primary"
-                      href={productWhatsAppUrl(p)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {p.buttonLabel || "Quero este produto"}
-                    </a>
+                    <span className="btn btn--primary" aria-hidden="true">
+                      Ver detalhes
+                    </span>
                   </div>
                 </article>
               );
@@ -293,6 +301,12 @@ export default function ProdutosPage() {
           </div>
         </div>
       </section>
+
+      <ProductModal
+        product={selected}
+        open={!!selected}
+        onClose={() => setSelected(null)}
+      />
     </SiteChrome>
   );
 }
