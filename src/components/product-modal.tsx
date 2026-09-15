@@ -2,10 +2,9 @@
 
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
-import { Product, productGallery, productWhatsAppUrl } from "@/lib/api";
-import { ProductCard } from "@/components/ui/product-card-1";
-import { Button } from "@/components/ui/button";
+import { MessageCircle, Tag, X } from "lucide-react";
+import { Product, formatBRL, productGallery, productWhatsAppUrl } from "@/lib/api";
+import { ProductImageCarousel } from "@/components/product-image-carousel";
 
 type Props = {
   product: Product | null;
@@ -15,13 +14,14 @@ type Props = {
 
 export function ProductModal({ product, open, onClose }: Props) {
   const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const t = window.setTimeout(() => closeRef.current?.focus(), 20);
+    const t = window.setTimeout(() => closeRef.current?.focus(), 40);
     return () => {
       document.body.style.overflow = prev;
       window.clearTimeout(t);
@@ -43,60 +43,88 @@ export function ProductModal({ product, open, onClose }: Props) {
   if (!open || !product || typeof document === "undefined") return null;
 
   const images = productGallery(product);
-  const discount =
-    product.compareAt && product.compareAt > product.price
-      ? Math.round(((product.compareAt - product.price) / product.compareAt) * 100)
-      : 0;
+  const catLabel = product.categoryRef?.name || product.category;
+  const cover = images[0];
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[6px] sm:items-center sm:p-6"
-      role="presentation"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <div className="prod-modal" role="presentation">
+      <button
+        type="button"
+        className="prod-modal__backdrop"
+        aria-label="Fechar popup"
+        onClick={onClose}
+      />
+      <div className="prod-modal__blur" aria-hidden="true" />
+      <div className="prod-modal__glow" aria-hidden="true" />
+
       <div
-        className="relative w-full max-w-sm animate-in fade-in zoom-in-95 duration-200 max-sm:rounded-t-xl max-sm:overflow-hidden"
+        ref={panelRef}
+        className="prod-modal__panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <Button
+        <div className="prod-modal__shine" aria-hidden="true" />
+
+        <button
           ref={closeRef}
           type="button"
-          variant="secondary"
-          size="icon"
-          className="absolute left-1/2 top-3 z-20 h-9 w-9 -translate-x-1/2 rounded-full bg-background/95 shadow-md sm:-top-12 sm:left-auto sm:right-0 sm:translate-x-0"
+          className="prod-modal__close"
           aria-label="Fechar"
           onClick={onClose}
         >
-          <X className="h-4 w-4" />
-        </Button>
+          <X size={18} />
+        </button>
 
-        <h2 id={titleId} className="sr-only">
-          {product.name}
-        </h2>
+        <div className="prod-modal__media">
+          {cover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="prod-modal__media-blur" src={cover} alt="" aria-hidden="true" />
+          ) : null}
+          <div className="prod-modal__media-main">
+            <ProductImageCarousel images={images} alt={product.name} />
+          </div>
+        </div>
 
-        <div className="max-h-[92vh] overflow-y-auto overscroll-contain max-sm:pt-14">
-          <ProductCard
-            name={product.name}
-            price={product.price}
-            originalPrice={product.compareAt ?? product.price}
-            images={images}
-            isNew={false}
-            isBestSeller={product.featured}
-            discount={discount}
-            freeShipping={false}
-            colors={[]}
-            sizes={[]}
-            currency="BRL"
-            ctaHref={productWhatsAppUrl(product)}
-            ctaLabel={product.buttonLabel || "Quero este produto"}
-            className="max-sm:max-w-none max-sm:rounded-none max-sm:rounded-t-md max-sm:shadow-none"
-          />
+        <div className="prod-modal__body">
+          <div className="prod-modal__chips">
+            <span className="prod-modal__chip">{catLabel}</span>
+            {product.featured ? (
+              <span className="prod-modal__chip prod-modal__chip--hot">Destaque</span>
+            ) : null}
+          </div>
+
+          <h2 id={titleId} className="prod-modal__title">
+            {product.name}
+          </h2>
+
+          {product.reference ? (
+            <p className="prod-modal__ref">
+              <Tag size={14} />
+              Ref: {product.reference}
+            </p>
+          ) : null}
+
+          <div className="prod-modal__price">
+            <strong>{formatBRL(product.price)}</strong>
+            {product.compareAt && product.compareAt > product.price ? (
+              <s>{formatBRL(product.compareAt)}</s>
+            ) : null}
+          </div>
+
+          <p className="prod-modal__desc">{product.description}</p>
+
+          <a
+            className="prod-modal__cta"
+            href={productWhatsAppUrl(product)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle size={18} />
+            <span>{product.buttonLabel || "Quero este produto"}</span>
+          </a>
         </div>
       </div>
     </div>,
