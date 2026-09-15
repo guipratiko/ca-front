@@ -43,29 +43,33 @@ export function ProductModal({ product, open, onClose }: Props) {
   if (!open || !product || typeof document === "undefined") return null;
 
   const images = productGallery(product);
-  const catLabel = product.categoryRef?.name || product.category;
+  const discount =
+    product.compareAt && product.compareAt > product.price
+      ? Math.round(((product.compareAt - product.price) / product.compareAt) * 100)
+      : 0;
 
   return createPortal(
     <div
-      className="prod-modal"
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 p-0 backdrop-blur-[6px] sm:items-center sm:p-6"
       role="presentation"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className="prod-modal__panel prod-modal__panel--card"
+        className="relative w-full max-w-sm animate-in fade-in zoom-in-95 duration-200 max-sm:rounded-t-xl max-sm:overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <Button
           ref={closeRef}
           type="button"
           variant="secondary"
           size="icon"
-          className="prod-modal__close absolute top-3 right-3 z-10 h-9 w-9 rounded-full shadow-md"
+          className="absolute left-1/2 top-3 z-20 h-9 w-9 -translate-x-1/2 rounded-full bg-background/95 shadow-md sm:-top-12 sm:left-auto sm:right-0 sm:translate-x-0"
           aria-label="Fechar"
           onClick={onClose}
         >
@@ -76,19 +80,22 @@ export function ProductModal({ product, open, onClose }: Props) {
           {product.name}
         </h2>
 
-        <div className="prod-modal__card-wrap">
+        <div className="max-h-[92vh] overflow-y-auto overscroll-contain max-sm:pt-14">
           <ProductCard
             name={product.name}
             price={product.price}
-            originalPrice={product.compareAt ?? undefined}
+            originalPrice={product.compareAt ?? product.price}
             images={images}
-            category={catLabel}
-            reference={product.reference}
-            description={product.description}
-            isFeatured={product.featured}
-            ctaLabel={product.buttonLabel || "Quero este produto"}
+            isNew={false}
+            isBestSeller={product.featured}
+            discount={discount}
+            freeShipping={false}
+            colors={[]}
+            sizes={[]}
+            currency="BRL"
             ctaHref={productWhatsAppUrl(product)}
-            className="max-w-none shadow-none border-0 rounded-none sm:rounded-xl"
+            ctaLabel={product.buttonLabel || "Quero este produto"}
+            className="max-sm:max-w-none max-sm:rounded-none max-sm:rounded-t-md max-sm:shadow-none"
           />
         </div>
       </div>
