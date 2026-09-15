@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Upload } from "lucide-react";
+import { Save, Upload, X } from "lucide-react";
 import {
   Product,
   TOKEN_KEY,
   createProduct,
+  productGallery,
   updateProduct,
   uploadImage,
 } from "@/lib/api";
@@ -33,7 +34,9 @@ export function ProductForm({ product }: { product?: Product }) {
   const [compareAt, setCompareAt] = useState(
     product?.compareAt != null ? String(product.compareAt) : ""
   );
-  const [image, setImage] = useState(product?.image || "");
+  const [images, setImages] = useState<string[]>(() =>
+    product ? productGallery(product) : []
+  );
   const [category, setCategory] = useState(product?.category || "Ferramentas");
   const [featured, setFeatured] = useState(!!product?.featured);
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(product?.status || "DRAFT");
@@ -42,6 +45,7 @@ export function ProductForm({ product }: { product?: Product }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [slugTouched, setSlugTouched] = useState(isEditing);
+  const [urlDraft, setUrlDraft] = useState("");
 
   const onName = (value: string) => {
     setName(value);
@@ -49,18 +53,34 @@ export function ProductForm({ product }: { product?: Product }) {
   };
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) return;
     setUploading(true);
     try {
-      setImage(await uploadImage(token, file));
+      const uploaded: string[] = [];
+      for (const file of files) {
+        uploaded.push(await uploadImage(token, file));
+      }
+      setImages((prev) => [...prev, ...uploaded]);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro no upload");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
+  };
+
+  const addUrl = () => {
+    const url = urlDraft.trim();
+    if (!url) return;
+    setImages((prev) => (prev.includes(url) ? prev : [...prev, url]));
+    setUrlDraft("");
+  };
+
+  const removeImage = (url: string) => {
+    setImages((prev) => prev.filter((u) => u !== url));
   };
 
   const save = async (nextStatus: "DRAFT" | "PUBLISHED") => {
@@ -81,7 +101,8 @@ export function ProductForm({ product }: { product?: Product }) {
       description,
       price: priceNum,
       compareAt: compareAt ? Number(String(compareAt).replace(",", ".")) : null,
-      image: image || null,
+      image: images[0] || null,
+      images,
       category,
       featured,
       status: nextStatus,
@@ -119,6 +140,56 @@ export function ProductForm({ product }: { product?: Product }) {
             placeholder="Detalhes do produto, o que acompanha, para quem é indicado..."
             required
           />
+        </div>
+
+        <div className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm space-y-3">
+          <h3 className="font-bold">Galeria de imagens</h3>
+          <p className="text-sm text-[var(--muted)]">
+            A primeira imagem é a capa. As demais entram no carrossel da vitrine.
+          </p>
+          <label className="h-10 rounded-xl border border-dashed border-[var(--line)] flex items-center justify-center gap-2 cursor-pointer text-sm font-semibold">
+            <Upload size={16} />
+            {uploading ? "Enviando…" : "Enviar imagens"}
+            <input type="file" accept="image/*" multiple className="hidden" onChange={onUpload} />
+          </label>
+          <div className="flex gap-2">
+            <input
+              className="flex-1 h-10 rounded-xl border border-[var(--line)] px-3 text-sm"
+              placeholder="ou cole uma URL"
+              value={urlDraft}
+              onChange={(e) => setUrlDraft(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={addUrl}
+              className="h-10 px-3 rounded-xl border border-[var(--line)] text-sm font-semibold"
+            >
+              Adicionar
+            </button>
+          </div>
+          {images.length ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {images.map((src, i) => (
+                <div key={src + i} className="relative group rounded-xl overflow-hidden border border-[var(--line)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" className="w-full aspect-[4/3] object-cover" />
+                  <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-black/60 text-white">
+                    {i === 0 ? "Capa" : i + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(src)}
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 text-white grid place-items-center opacity-90"
+                    aria-label="Remover imagem"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-[var(--muted)]">Nenhuma imagem ainda.</p>
+          )}
         </div>
       </div>
 
@@ -209,25 +280,6 @@ export function ProductForm({ product }: { product?: Product }) {
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm space-y-3">
-          <h3 className="font-bold">Imagem</h3>
-          <label className="h-10 rounded-xl border border-dashed border-[var(--line)] flex items-center justify-center gap-2 cursor-pointer text-sm font-semibold">
-            <Upload size={16} />
-            {uploading ? "Enviando…" : "Enviar imagem"}
-            <input type="file" accept="image/*" className="hidden" onChange={onUpload} />
-          </label>
-          {image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={image} alt="" className="w-full rounded-xl border border-[var(--line)]" />
-          ) : null}
-          <input
-            className="w-full h-10 rounded-xl border border-[var(--line)] px-3 text-sm"
-            placeholder="ou cole a URL"
-            value={image || ""}
-            onChange={(e) => setImage(e.target.value)}
-          />
         </div>
       </aside>
     </div>

@@ -44,6 +44,7 @@ export type Product = {
   price: number;
   compareAt?: number | null;
   image?: string | null;
+  images?: string[];
   category: string;
   featured: boolean;
   status: ArticleStatus;
@@ -60,12 +61,19 @@ export type ProductPayload = {
   price: number;
   compareAt?: number | null;
   image?: string | null;
+  images?: string[];
   category?: string;
   featured?: boolean;
   status?: ArticleStatus;
   buttonLabel?: string;
   buttonUrl?: string | null;
 };
+
+export function productGallery(product: Pick<Product, "image" | "images">): string[] {
+  const list = [...(product.images || [])].filter(Boolean);
+  if (product.image && !list.includes(product.image)) list.unshift(product.image);
+  return list;
+}
 
 /** Base da API — definida em `.env` / EasyPanel como NEXT_PUBLIC_API_URL */
 function resolveApiUrl() {
