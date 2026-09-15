@@ -35,13 +35,32 @@ export default function ProdutosPage() {
   const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
-    Promise.all([listPublicProducts(), listPublicCategories()])
-      .then(([prodData, catData]) => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const prodData = await listPublicProducts();
+        if (cancelled) return;
         setProducts(prodData.products || []);
-        setCategories(catData.categories || []);
-      })
-      .catch((err) => setError(err instanceof Error ? err.message : "Erro ao carregar"))
-      .finally(() => setLoading(false));
+        setError("");
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Erro ao carregar");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+
+      try {
+        const catData = await listPublicCategories();
+        if (!cancelled) setCategories(catData.categories || []);
+      } catch {
+        // Backend antigo ou sem tabela Category: filtros usam categorias dos produtos
+        if (!cancelled) setCategories([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const categoryOptions = useMemo(() => {
