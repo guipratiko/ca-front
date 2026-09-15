@@ -50,6 +50,7 @@ export type Product = {
   status: ArticleStatus;
   buttonLabel: string;
   buttonUrl?: string | null;
+  reference?: string | null;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -67,12 +68,37 @@ export type ProductPayload = {
   status?: ArticleStatus;
   buttonLabel?: string;
   buttonUrl?: string | null;
+  reference?: string | null;
 };
 
 export function productGallery(product: Pick<Product, "image" | "images">): string[] {
   const list = [...(product.images || [])].filter(Boolean);
   if (product.image && !list.includes(product.image)) list.unshift(product.image);
   return list;
+}
+
+/** WhatsApp da vitrine de produtos (peças/ferramentas). */
+export const PRODUCTS_WHATSAPP = "5562991197301";
+
+export function productWhatsAppUrl(
+  product: Pick<Product, "name" | "reference">
+): string {
+  const ref = product.reference?.trim();
+  const lines = [
+    "Olá! Vim pela vitrine CA Tools no site.",
+    `Tenho interesse no produto: ${product.name}`,
+  ];
+  if (ref) lines.push(`Referência: ${ref}`);
+  lines.push("Pode me passar mais detalhes?");
+
+  return `https://wa.me/${PRODUCTS_WHATSAPP}?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+
+export function productsWhatsAppUrl(message?: string): string {
+  const text =
+    message ||
+    "Olá! Vim pela vitrine CA Tools no site e quero saber mais sobre os produtos.";
+  return `https://wa.me/${PRODUCTS_WHATSAPP}?text=${encodeURIComponent(text)}`;
 }
 
 /** Base da API — definida em `.env` / EasyPanel como NEXT_PUBLIC_API_URL */

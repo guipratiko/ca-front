@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { productsWhatsAppUrl } from "@/lib/api";
 
 const THEME_KEY = "ca-theme";
 
@@ -175,7 +176,7 @@ export function SiteChrome({
               <p style={{ fontSize: ".9rem", marginBottom: 14 }}>Rua 2, 115, Goiânia, 74013-020, GO, BR.</p>
               <a
                 className="btn btn--wa"
-                href="https://wa.me/5562984002318"
+                href={isTools ? productsWhatsAppUrl() : "https://wa.me/5562984002318"}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -194,7 +195,11 @@ export function SiteChrome({
 
       <a
         className="wa-float"
-        href="https://wa.me/5562984002318?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20CA%20Cursos%20e%20quero%20falar%20sobre%20produtos."
+        href={
+          isTools
+            ? productsWhatsAppUrl()
+            : "https://wa.me/5562984002318?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20CA%20Cursos%20e%20quero%20falar%20sobre%20produtos."
+        }
         aria-label="Falar no WhatsApp"
         target="_blank"
         rel="noopener noreferrer"

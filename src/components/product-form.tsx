@@ -42,6 +42,7 @@ export function ProductForm({ product }: { product?: Product }) {
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(product?.status || "DRAFT");
   const [buttonLabel, setButtonLabel] = useState(product?.buttonLabel || "Quero este produto");
   const [buttonUrl, setButtonUrl] = useState(product?.buttonUrl || "");
+  const [reference, setReference] = useState(product?.reference || "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [slugTouched, setSlugTouched] = useState(isEditing);
@@ -94,6 +95,10 @@ export function ProductForm({ product }: { product?: Product }) {
       alert("Informe um preço válido");
       return;
     }
+    if (nextStatus === "PUBLISHED" && !reference.trim()) {
+      alert("Informe a referência do produto (ela vai na mensagem do WhatsApp).");
+      return;
+    }
     setSaving(true);
     const payload = {
       name,
@@ -108,6 +113,7 @@ export function ProductForm({ product }: { product?: Product }) {
       status: nextStatus,
       buttonLabel,
       buttonUrl: buttonUrl || null,
+      reference: reference.trim() || null,
     };
     try {
       if (isEditing && product) await updateProduct(token, product.id, payload);
@@ -227,7 +233,18 @@ export function ProductForm({ product }: { product?: Product }) {
         </div>
 
         <div className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm space-y-3">
-          <h3 className="font-bold">Preço e link</h3>
+          <h3 className="font-bold">Preço e WhatsApp</h3>
+          <label className="block text-sm font-semibold">Referência do produto</label>
+          <input
+            className="w-full h-10 rounded-xl border border-[var(--line)] px-3"
+            value={reference}
+            onChange={(e) => setReference(e.target.value)}
+            placeholder="Ex.: CAT-001 / SKU"
+            required
+          />
+          <p className="text-xs text-[var(--muted)]">
+            Enviada automaticamente na conversa do WhatsApp (62) 99119-7301.
+          </p>
           <label className="block text-sm font-semibold">Preço (R$)</label>
           <input
             className="w-full h-10 rounded-xl border border-[var(--line)] px-3"
@@ -248,12 +265,12 @@ export function ProductForm({ product }: { product?: Product }) {
             value={buttonLabel}
             onChange={(e) => setButtonLabel(e.target.value)}
           />
-          <label className="block text-sm font-semibold">URL do botão (WhatsApp/pagamento)</label>
+          <label className="block text-sm font-semibold">Link alternativo (opcional)</label>
           <input
             className="w-full h-10 rounded-xl border border-[var(--line)] px-3"
             value={buttonUrl}
             onChange={(e) => setButtonUrl(e.target.value)}
-            placeholder="https://wa.me/..."
+            placeholder="Só se não for WhatsApp"
           />
         </div>
 

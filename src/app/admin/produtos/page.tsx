@@ -112,7 +112,8 @@ export default function AdminProductsPage() {
                 <h2 className="font-bold">{p.name}</h2>
                 <p className="text-sm text-[var(--muted)] line-clamp-1">{p.description}</p>
                 <p className="text-xs text-[var(--muted)] mt-1">
-                  {formatBRL(p.price)} · {p.category} ·{" "}
+                  {formatBRL(p.price)} · {p.category}
+                  {p.reference ? ` · Ref: ${p.reference}` : ""} ·{" "}
                   {p.status === "PUBLISHED" ? "Publicado" : "Rascunho"}
                   {p.featured ? " · Destaque" : ""}
                 </p>

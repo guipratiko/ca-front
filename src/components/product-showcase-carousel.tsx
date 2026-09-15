@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Product, formatBRL, productGallery } from "@/lib/api";
+import { Product, formatBRL, productGallery, productWhatsAppUrl } from "@/lib/api";
 
 /** Faixa horizontal de cards — inspirado no Carousel Cards (21st / kokonutd). */
 export function ProductShowcaseCarousel({ products }: { products: Product[] }) {
@@ -48,12 +48,13 @@ export function ProductShowcaseCarousel({ products }: { products: Product[] }) {
               <div className="prod-strip__body">
                 <p className="prod-strip__cat">{p.category}</p>
                 <h3>{p.name}</h3>
+                {p.reference ? <p className="prod-strip__ref">Ref: {p.reference}</p> : null}
                 <strong>{formatBRL(p.price)}</strong>
                 <a
                   className="btn btn--primary btn--sm"
-                  href={p.buttonUrl || "/contato.html"}
-                  target={p.buttonUrl ? "_blank" : undefined}
-                  rel={p.buttonUrl ? "noopener noreferrer" : undefined}
+                  href={productWhatsAppUrl(p)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   {p.buttonLabel || "Quero este"}
                 </a>

@@ -9,6 +9,8 @@ import {
   formatBRL,
   listPublicProducts,
   productGallery,
+  productWhatsAppUrl,
+  productsWhatsAppUrl,
 } from "@/lib/api";
 import "./produtos.css";
 
@@ -62,7 +64,7 @@ export default function ProdutosPage() {
             <a className="btn btn--primary btn--lg" href="#vitrine">
               Ver produtos
             </a>
-            <a className="btn btn--ghost btn--lg" href="/contato.html">
+            <a className="btn btn--ghost btn--lg" href={productsWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
               Falar no WhatsApp
             </a>
           </div>
@@ -126,11 +128,14 @@ export default function ProdutosPage() {
                         <s>{formatBRL(p.compareAt)}</s>
                       ) : null}
                     </div>
+                    {p.reference ? (
+                      <p className="prod-card__ref">Ref: {p.reference}</p>
+                    ) : null}
                     <a
                       className="btn btn--primary"
-                      href={p.buttonUrl || "/contato.html"}
-                      target={p.buttonUrl ? "_blank" : undefined}
-                      rel={p.buttonUrl ? "noopener noreferrer" : undefined}
+                      href={productWhatsAppUrl(p)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       {p.buttonLabel || "Quero este produto"}
                     </a>
