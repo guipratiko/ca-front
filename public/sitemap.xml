@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.cacursos.com.br/</loc><priority>1.0</priority></url>
+  <url><loc>https://www.cacursos.com.br/cursos.html</loc><priority>0.9</priority></url>
+  <url><loc>https://www.cacursos.com.br/aulas.html</loc><priority>0.9</priority></url>
+  <url><loc>https://www.cacursos.com.br/blog.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.cacursos.com.br/sobre.html</loc><priority>0.6</priority></url>
+  <url><loc>https://www.cacursos.com.br/contato.html</loc><priority>0.6</priority></url>
+</urlset>
