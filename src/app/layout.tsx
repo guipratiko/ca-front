@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "Admin Blog · CA Cursos",
   description: "Painel para criar e editar artigos do blog CA Cursos",
   robots: { index: false, follow: false },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/assets/img/favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/assets/img/favicon-180.png", sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
