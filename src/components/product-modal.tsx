@@ -3,8 +3,9 @@
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { Product, formatBRL, productGallery, productWhatsAppUrl } from "@/lib/api";
-import { ProductImageCarousel } from "@/components/product-image-carousel";
+import { Product, productGallery, productWhatsAppUrl } from "@/lib/api";
+import { ProductCard } from "@/components/ui/product-card-1";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   product: Product | null;
@@ -14,7 +15,6 @@ type Props = {
 
 export function ProductModal({ product, open, onClose }: Props) {
   const titleId = useId();
-  const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -54,50 +54,42 @@ export function ProductModal({ product, open, onClose }: Props) {
       }}
     >
       <div
-        ref={panelRef}
-        className="prod-modal__panel"
+        className="prod-modal__panel prod-modal__panel--card"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
       >
-        <button
+        <Button
           ref={closeRef}
           type="button"
-          className="prod-modal__close"
+          variant="secondary"
+          size="icon"
+          className="prod-modal__close absolute top-3 right-3 z-10 h-9 w-9 rounded-full shadow-md"
           aria-label="Fechar"
           onClick={onClose}
         >
-          <X size={18} />
-        </button>
+          <X className="h-4 w-4" />
+        </Button>
 
-        <div className="prod-modal__media">
-          <ProductImageCarousel images={images} alt={product.name} />
-        </div>
+        <h2 id={titleId} className="sr-only">
+          {product.name}
+        </h2>
 
-        <div className="prod-modal__body">
-          <p className="prod-modal__cat">{catLabel}</p>
-          <h2 id={titleId} className="prod-modal__title">
-            {product.name}
-          </h2>
-          {product.reference ? (
-            <p className="prod-modal__ref">Ref: {product.reference}</p>
-          ) : null}
-          <div className="prod-modal__price">
-            <strong>{formatBRL(product.price)}</strong>
-            {product.compareAt && product.compareAt > product.price ? (
-              <s>{formatBRL(product.compareAt)}</s>
-            ) : null}
-          </div>
-          <p className="prod-modal__desc">{product.description}</p>
-          <a
-            className="btn btn--primary btn--lg prod-modal__cta"
-            href={productWhatsAppUrl(product)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {product.buttonLabel || "Quero este produto"}
-          </a>
+        <div className="prod-modal__card-wrap">
+          <ProductCard
+            name={product.name}
+            price={product.price}
+            originalPrice={product.compareAt ?? undefined}
+            images={images}
+            category={catLabel}
+            reference={product.reference}
+            description={product.description}
+            isFeatured={product.featured}
+            ctaLabel={product.buttonLabel || "Quero este produto"}
+            ctaHref={productWhatsAppUrl(product)}
+            className="max-w-none shadow-none border-0 rounded-none sm:rounded-xl"
+          />
         </div>
       </div>
     </div>,
