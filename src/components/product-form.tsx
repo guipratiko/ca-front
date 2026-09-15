@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Upload, X } from "lucide-react";
 import {
+  Category,
   Product,
   TOKEN_KEY,
   createProduct,
+  listAdminCategories,
   productGallery,
   updateProduct,
   uploadImage,
 } from "@/lib/api";
-
-const CATEGORIES = ["Ferramentas", "Kits", "Peças", "Equipamentos", "Geral"];
 
 function slugFromName(name: string): string {
   return name
@@ -37,7 +37,8 @@ export function ProductForm({ product }: { product?: Product }) {
   const [images, setImages] = useState<string[]>(() =>
     product ? productGallery(product) : []
   );
-  const [category, setCategory] = useState(product?.category || "Ferramentas");
+  const [categoryId, setCategoryId] = useState(product?.categoryId || "");
+  const [categories, setCategories] = useState<Category[]>([]);
   const [featured, setFeatured] = useState(!!product?.featured);
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(product?.status || "DRAFT");
   const [buttonLabel, setButtonLabel] = useState(product?.buttonLabel || "Quero este produto");
@@ -47,6 +48,22 @@ export function ProductForm({ product }: { product?: Product }) {
   const [uploading, setUploading] = useState(false);
   const [slugTouched, setSlugTouched] = useState(isEditing);
   const [urlDraft, setUrlDraft] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+    listAdminCategories(token)
+      .then((data) => {
+        const list = data.categories || [];
+        setCategories(list);
+        if (!categoryId && list.length) {
+          const match = list.find((c) => c.name === product?.category);
+          setCategoryId(match?.id || list[0].id);
+        }
+      })
+      .catch(() => setCategories([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onName = (value: string) => {
     setName(value);
@@ -99,7 +116,12 @@ export function ProductForm({ product }: { product?: Product }) {
       alert("Informe a referência do produto (ela vai na mensagem do WhatsApp).");
       return;
     }
+    if (nextStatus === "PUBLISHED" && !categoryId) {
+      alert("Selecione uma categoria. Cadastre em Admin → Categorias se ainda não houver.");
+      return;
+    }
     setSaving(true);
+    const selected = categories.find((c) => c.id === categoryId);
     const payload = {
       name,
       slug: slug || undefined,
@@ -108,7 +130,8 @@ export function ProductForm({ product }: { product?: Product }) {
       compareAt: compareAt ? Number(String(compareAt).replace(",", ".")) : null,
       image: images[0] || null,
       images,
-      category,
+      categoryId: categoryId || null,
+      category: selected?.name || product?.category || "Geral",
       featured,
       status: nextStatus,
       buttonLabel,
@@ -288,15 +311,25 @@ export function ProductForm({ product }: { product?: Product }) {
           <label className="block text-sm font-semibold">Categoria</label>
           <select
             className="w-full h-10 rounded-xl border border-[var(--line)] px-3"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
           >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            <option value="">Selecione…</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+                {!c.active ? " (inativa)" : ""}
               </option>
             ))}
           </select>
+          {!categories.length ? (
+            <p className="text-xs text-[var(--muted)]">
+              Nenhuma categoria cadastrada.{" "}
+              <a href="/admin/categorias" className="text-[var(--brand-700)] font-semibold">
+                Criar categorias →
+              </a>
+            </p>
+          ) : null}
         </div>
       </aside>
     </div>

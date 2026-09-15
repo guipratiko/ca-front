@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Pencil, Trash2, Package } from "lucide-react";
+import { LogOut, Plus, Pencil, Trash2, Package, Tags } from "lucide-react";
 import {
   Article,
   TOKEN_KEY,
@@ -61,6 +61,12 @@ export default function DashboardPage() {
             className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
           >
             <Package size={16} /> Produtos
+          </Link>
+          <Link
+            href="/admin/categorias"
+            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
+          >
+            <Tags size={16} /> Categorias
           </Link>
           <Link
             href="/admin/artigos/novo"

@@ -46,6 +46,8 @@ export type Product = {
   image?: string | null;
   images?: string[];
   category: string;
+  categoryId?: string | null;
+  categoryRef?: { id: string; name: string; slug: string } | null;
   featured: boolean;
   status: ArticleStatus;
   buttonLabel: string;
@@ -64,11 +66,30 @@ export type ProductPayload = {
   image?: string | null;
   images?: string[];
   category?: string;
+  categoryId?: string | null;
   featured?: boolean;
   status?: ArticleStatus;
   buttonLabel?: string;
   buttonUrl?: string | null;
   reference?: string | null;
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  sortOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  _count?: { products: number };
+};
+
+export type CategoryPayload = {
+  name: string;
+  slug?: string;
+  sortOrder?: number;
+  active?: boolean;
 };
 
 export function productGallery(product: Pick<Product, "image" | "images">): string[] {
@@ -174,8 +195,58 @@ export async function deleteArticle(token: string, id: string) {
   });
 }
 
-export async function listPublicProducts() {
-  return request<{ products: Product[] }>("/api/products");
+export async function listPublicProducts(params?: {
+  categoryId?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}) {
+  const q = new URLSearchParams();
+  if (params?.categoryId) q.set("categoryId", params.categoryId);
+  if (params?.category) q.set("category", params.category);
+  if (params?.minPrice != null && Number.isFinite(params.minPrice)) {
+    q.set("minPrice", String(params.minPrice));
+  }
+  if (params?.maxPrice != null && Number.isFinite(params.maxPrice)) {
+    q.set("maxPrice", String(params.maxPrice));
+  }
+  const qs = q.toString();
+  return request<{ products: Product[] }>(`/api/products${qs ? `?${qs}` : ""}`);
+}
+
+export async function listPublicCategories() {
+  return request<{ categories: Category[] }>("/api/categories");
+}
+
+export async function listAdminCategories(token: string) {
+  return request<{ categories: Category[] }>("/api/categories/admin/all", { token });
+}
+
+export async function createCategory(token: string, payload: CategoryPayload) {
+  return request<{ category: Category }>("/api/categories", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateCategory(
+  token: string,
+  id: string,
+  payload: Partial<CategoryPayload>
+) {
+  return request<{ category: Category }>(`/api/categories/${id}`, {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCategory(token: string, id: string) {
+  return request<{ message: string; detachedProducts?: number }>(`/api/categories/${id}`, {
+    method: "DELETE",
+    token,
+  });
 }
 
 export async function listAdminProducts(token: string) {
