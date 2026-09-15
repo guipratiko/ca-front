@@ -67,8 +67,20 @@ export type ProductPayload = {
   buttonUrl?: string | null;
 };
 
-/** Base da API — definida em `.env` / `.env.local` como NEXT_PUBLIC_API_URL */
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787";
+/** Base da API — definida em `.env` / EasyPanel como NEXT_PUBLIC_API_URL */
+function resolveApiUrl() {
+  const raw = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787").replace(/\/$/, "");
+  // Evita Mixed Content: página HTTPS não pode chamar API em HTTP
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    raw.startsWith("http://")
+  ) {
+    return raw.replace(/^http:\/\//, "https://");
+  }
+  return raw;
+}
+
 export const TOKEN_KEY = "cacursos_admin_token";
 
 async function request<T>(
@@ -82,7 +94,7 @@ async function request<T>(
   }
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const res = await fetch(`${API_URL}${path}`, { ...init, headers });
+  const res = await fetch(`${resolveApiUrl()}${path}`, { ...init, headers });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error((data && data.error) || `Erro ${res.status}`);
@@ -166,7 +178,7 @@ export async function deleteProduct(token: string, id: string) {
 export async function uploadImage(token: string, file: File) {
   const form = new FormData();
   form.append("image", file);
-  const res = await fetch(`${API_URL}/api/upload`, {
+  const res = await fetch(`${resolveApiUrl()}/api/upload`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: form,
