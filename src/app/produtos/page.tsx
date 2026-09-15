@@ -41,10 +41,16 @@ export default function ProdutosPage() {
   );
 
   return (
-    <SiteChrome active="produtos">
+    <SiteChrome active="produtos" brand="catools">
       <section className="prod-hero">
         <div className="container prod-hero__inner">
-          <span className="eyebrow">CA Cursos · Vitrine</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="prod-hero__logo"
+            src="/assets/img/logo-ca-tools.png"
+            alt="CA Tools"
+          />
+          <span className="eyebrow">CA Tools · Vitrine oficial</span>
           <h1>
             Produtos para a <span className="grad-text">bancada</span>
           </h1>

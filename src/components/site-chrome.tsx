@@ -24,13 +24,16 @@ function SunIcon() {
 export function SiteChrome({
   children,
   active = "produtos",
+  brand = "cacursos",
 }: {
   children: React.ReactNode;
   active?: "inicio" | "cursos" | "produtos" | "aulas" | "blog" | "sobre" | "contato";
+  brand?: "cacursos" | "catools";
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const year = new Date().getFullYear();
+  const isTools = brand === "catools";
 
   useEffect(() => {
     const root = document.documentElement;
@@ -69,19 +72,28 @@ export function SiteChrome({
     { id: "contato", href: "/contato.html", label: "Contato" },
   ] as const;
 
+  const logo = isTools ? (
+    <a className="logo logo--tools" href="/produtos" aria-label="CA Tools, vitrine de produtos">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="logo__img logo__img--tools" src="/assets/img/logo-ca-tools.png" alt="CA Tools" />
+    </a>
+  ) : (
+    <a className="logo" href="/index.html" aria-label="CA Cursos, página inicial">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="logo__img logo__img--dark" src="/assets/img/logo-ca-cursos.png" alt="CA Cursos" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="logo__img logo__img--light" src="/assets/img/logo-ca-cursos-light.png" alt="" aria-hidden="true" />
+    </a>
+  );
+
   return (
-    <div className="ca-site">
+    <div className={`ca-site${isTools ? " ca-site--tools" : ""}`}>
       <a className="skip-link" href="#conteudo">
         Pular para o conteúdo
       </a>
       <header className={`header${scrolled ? " is-scrolled" : ""}`}>
         <div className="container header__inner">
-          <a className="logo" href="/index.html" aria-label="CA Cursos, página inicial">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="logo__img logo__img--dark" src="/assets/img/logo-ca-cursos.png" alt="CA Cursos" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="logo__img logo__img--light" src="/assets/img/logo-ca-cursos-light.png" alt="" aria-hidden="true" />
-          </a>
+          {logo}
           <nav className="nav">
             {nav.map((item) => (
               <a key={item.id} href={item.href} className={active === item.id ? "is-active" : undefined}>
@@ -93,8 +105,8 @@ export function SiteChrome({
             <a className="btn btn--ghost btn--sm" href="/aulas.html">
               Assistir grátis
             </a>
-            <a className="btn btn--primary btn--sm" href="/cursos.html">
-              Ver cursos
+            <a className="btn btn--primary btn--sm" href={isTools ? "/produtos" : "/cursos.html"}>
+              {isTools ? "Ver produtos" : "Ver cursos"}
             </a>
             <button className="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema" onClick={toggleTheme}>
               <MoonIcon />
@@ -123,8 +135,8 @@ export function SiteChrome({
             {item.label}
           </a>
         ))}
-        <a className="btn btn--primary" href="/cursos.html">
-          Ver cursos
+        <a className="btn btn--primary" href={isTools ? "/produtos" : "/cursos.html"}>
+          {isTools ? "Ver produtos" : "Ver cursos"}
         </a>
       </nav>
 
@@ -134,11 +146,22 @@ export function SiteChrome({
         <div className="container">
           <div className="footer__grid">
             <div className="footer__brand">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="logo__img logo__img--dark" src="/assets/img/logo-ca-cursos.png" alt="CA Cursos" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="logo__img logo__img--light" src="/assets/img/logo-ca-cursos-light.png" alt="" aria-hidden="true" />
-              <p>Escola especializada em formação profissional na área de manutenção de celulares.</p>
+              {isTools ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="logo__img logo__img--tools logo__img--tools-footer" src="/assets/img/logo-ca-tools.png" alt="CA Tools" />
+              ) : (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="logo__img logo__img--dark" src="/assets/img/logo-ca-cursos.png" alt="CA Cursos" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="logo__img logo__img--light" src="/assets/img/logo-ca-cursos-light.png" alt="" aria-hidden="true" />
+                </>
+              )}
+              <p>
+                {isTools
+                  ? "Linha de produtos e ferramentas CA Tools para a bancada de manutenção de celulares."
+                  : "Escola especializada em formação profissional na área de manutenção de celulares."}
+              </p>
             </div>
             <div>
               <h5>Navegação</h5>
@@ -161,7 +184,7 @@ export function SiteChrome({
             </div>
           </div>
           <div className="footer__bottom">
-            <span>© {year} CA Cursos. Todos os direitos reservados.</span>
+            <span>© {year} {isTools ? "CA Tools" : "CA Cursos"}. Todos os direitos reservados.</span>
             <span>
               <a href="https://www.cacursos.com.br/">cacursos.com.br</a>
             </span>

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Produtos · CA Cursos",
+  title: "CA Tools · Produtos | CA Cursos",
   description:
-    "Kits, ferramentas e itens selecionados para manutenção de celulares — vitrine oficial da CA Cursos.",
+    "Vitrine CA Tools: kits, ferramentas e itens selecionados para manutenção de celulares.",
   robots: { index: true, follow: true },
 };
 
