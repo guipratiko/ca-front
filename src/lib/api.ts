@@ -214,6 +214,10 @@ export async function listPublicProducts(params?: {
   return request<{ products: Product[] }>(`/api/products${qs ? `?${qs}` : ""}`);
 }
 
+export async function getPublicProductBySlug(slug: string) {
+  return request<{ product: Product }>(`/api/products/slug/${encodeURIComponent(slug)}`);
+}
+
 export async function listPublicCategories() {
   return request<{ categories: Category[] }>("/api/categories");
 }

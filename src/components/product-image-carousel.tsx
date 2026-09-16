@@ -35,11 +35,7 @@ export function ProductImageCarousel({
   };
 
   return (
-    <div
-      className="prod-gallery"
-      onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => e.stopPropagation()}
-    >
+    <div className="prod-gallery">
       <div
         className="prod-gallery__stage"
         onTouchStart={(e) => {

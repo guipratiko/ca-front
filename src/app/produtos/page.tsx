@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { SiteChrome } from "@/components/site-chrome";
-import { ProductImageCarousel } from "@/components/product-image-carousel";
 import { ProductShowcaseCarousel } from "@/components/product-showcase-carousel";
-import { ProductModal } from "@/components/product-modal";
 import {
   Category,
   Product,
@@ -25,6 +25,7 @@ const PRICE_PRESETS = [
 ] as const;
 
 export default function ProdutosPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +34,6 @@ export default function ProdutosPage() {
   const [pricePreset, setPricePreset] = useState<(typeof PRICE_PRESETS)[number]["id"]>("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [selected, setSelected] = useState<Product | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,7 +55,6 @@ export default function ProdutosPage() {
         const catData = await listPublicCategories();
         if (!cancelled) setCategories(catData.categories || []);
       } catch {
-        // Backend antigo ou sem tabela Category: filtros usam categorias dos produtos
         if (!cancelled) setCategories([]);
       }
     })();
@@ -80,13 +79,9 @@ export default function ProdutosPage() {
     const minManual = minPrice.trim() ? Number(String(minPrice).replace(",", ".")) : undefined;
     const maxManual = maxPrice.trim() ? Number(String(maxPrice).replace(",", ".")) : undefined;
     const min =
-      minManual != null && Number.isFinite(minManual)
-        ? minManual
-        : preset.min;
+      minManual != null && Number.isFinite(minManual) ? minManual : preset.min;
     const max =
-      maxManual != null && Number.isFinite(maxManual)
-        ? maxManual
-        : preset.max;
+      maxManual != null && Number.isFinite(maxManual) ? maxManual : preset.max;
 
     return products.filter((p) => {
       if (categoryId !== "Todos") {
@@ -111,6 +106,10 @@ export default function ProdutosPage() {
     setMaxPrice("");
   };
 
+  const openProduct = (slug: string) => {
+    router.push(`/produtos/${slug}`);
+  };
+
   return (
     <SiteChrome active="produtos" brand="catools">
       <section className="prod-hero">
@@ -128,7 +127,7 @@ export default function ProdutosPage() {
             </h1>
             <p className="lead">
               Kits, ferramentas e itens selecionados para quem está começando ou evoluindo na
-              manutenção de celulares, no mesmo padrão visual do site.
+              manutenção de celulares - no mesmo padrão visual do site.
             </p>
             <div className="prod-hero__cta">
               <a className="btn btn--primary btn--lg" href="#vitrine">
@@ -153,7 +152,7 @@ export default function ProdutosPage() {
           {error ? <p className="prod-status prod-status--error">{error}</p> : null}
 
           {!loading && featured.length > 0 ? (
-            <ProductShowcaseCarousel products={featured} onSelect={setSelected} />
+            <ProductShowcaseCarousel products={featured} />
           ) : null}
 
           {!loading && !error && products.length > 0 ? (
@@ -161,7 +160,7 @@ export default function ProdutosPage() {
               <div className="section-head" style={{ marginBottom: 18 }}>
                 <span className="eyebrow">Catálogo</span>
                 <h2>Todos os produtos</h2>
-                <p>Filtre por categoria e faixa de preço.</p>
+                <p>Filtre por categoria e faixa de preço. Clique no produto para ver os detalhes.</p>
               </div>
 
               <div className="prod-filters-block">
@@ -258,23 +257,30 @@ export default function ProdutosPage() {
 
           <div className="prod-grid">
             {filtered.map((p) => {
-              const images = productGallery(p);
+              const cover = productGallery(p)[0];
               const catLabel = p.categoryRef?.name || p.category;
               return (
                 <article
                   key={p.id}
                   className="prod-card"
-                  role="button"
+                  role="link"
                   tabIndex={0}
-                  onClick={() => setSelected(p)}
+                  onClick={() => openProduct(p.slug)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      setSelected(p);
+                      openProduct(p.slug);
                     }
                   }}
                 >
-                  <ProductImageCarousel images={images} alt={p.name} />
+                  <div className="prod-card__cover">
+                    {cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={cover} alt="" />
+                    ) : (
+                      <span>Sem imagem</span>
+                    )}
+                  </div>
                   <div className="prod-card__body">
                     <div className="prod-card__meta">
                       <span className="prod-card__cat">{catLabel}</span>
@@ -291,9 +297,13 @@ export default function ProdutosPage() {
                     {p.reference ? (
                       <p className="prod-card__ref">Ref: {p.reference}</p>
                     ) : null}
-                    <span className="btn btn--primary" aria-hidden="true">
-                      Ver detalhes
-                    </span>
+                    <Link
+                      className="btn btn--primary"
+                      href={`/produtos/${p.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Ver produto
+                    </Link>
                   </div>
                 </article>
               );
@@ -301,12 +311,6 @@ export default function ProdutosPage() {
           </div>
         </div>
       </section>
-
-      <ProductModal
-        product={selected}
-        open={!!selected}
-        onClose={() => setSelected(null)}
-      />
     </SiteChrome>
   );
 }
