@@ -149,7 +149,11 @@ export function SiteChrome({
             <div className="footer__brand">
               {isTools ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img className="logo__img logo__img--tools logo__img--tools-footer" src="/assets/img/logo-ca-tools.png" alt="CA Tools" />
+                <img
+                  className="logo__img logo__img--tools logo__img--tools-footer"
+                  src="/assets/img/logo-ca-tools-footer.png"
+                  alt="CA Tools"
+                />
               ) : (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}

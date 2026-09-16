@@ -3,17 +3,24 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Pencil, Trash2, Package, Tags, Video } from "lucide-react";
+import { LogOut, Plus, Pencil, Trash2, Video, FileText, Package, Tags } from "lucide-react";
 import {
-  Article,
+  OpenLesson,
   TOKEN_KEY,
-  deleteArticle,
-  listAdminArticles,
+  deleteLesson,
+  listAdminLessons,
 } from "@/lib/api";
 
-export default function DashboardPage() {
+const CAT_LABEL: Record<string, string> = {
+  iniciante: "Iniciante",
+  intermediario: "Intermediário",
+  avancado: "Avançado",
+  eventos: "Eventos",
+};
+
+export default function AdminLessonsPage() {
   const router = useRouter();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [lessons, setLessons] = useState<OpenLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,8 +30,8 @@ export default function DashboardPage() {
       router.replace("/admin/login");
       return;
     }
-    listAdminArticles(token)
-      .then((data) => setArticles(data.articles || []))
+    listAdminLessons(token)
+      .then((data) => setLessons(data.lessons || []))
       .catch((err) => setError(err instanceof Error ? err.message : "Erro ao carregar"))
       .finally(() => setLoading(false));
   }, [router]);
@@ -39,8 +46,8 @@ export default function DashboardPage() {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) return;
     try {
-      await deleteArticle(token, id);
-      setArticles((list) => list.filter((a) => a.id !== id));
+      await deleteLesson(token, id);
+      setLessons((list) => list.filter((a) => a.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao excluir");
     }
@@ -50,23 +57,23 @@ export default function DashboardPage() {
     <main className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-[var(--line)] bg-white/90 backdrop-blur">
         <div className="max-w-6xl mx-auto px-5 h-16 flex items-center gap-3">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[var(--brand)]">
               CA Cursos
             </p>
-            <h1 className="text-lg font-extrabold leading-tight">Artigos do blog</h1>
+            <h1 className="text-lg font-extrabold leading-tight">Vídeo aulas abertas</h1>
           </div>
+          <Link
+            href="/admin/dashboard"
+            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
+          >
+            <FileText size={16} /> Artigos
+          </Link>
           <Link
             href="/admin/produtos"
             className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
           >
             <Package size={16} /> Produtos
-          </Link>
-          <Link
-            href="/admin/aulas"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Video size={16} /> Aulas
           </Link>
           <Link
             href="/admin/categorias"
@@ -75,10 +82,10 @@ export default function DashboardPage() {
             <Tags size={16} /> Categorias
           </Link>
           <Link
-            href="/admin/artigos/novo"
+            href="/admin/aulas/novo"
             className="h-10 px-4 rounded-xl bg-[var(--brand)] text-white font-bold inline-flex items-center gap-2"
           >
-            <Plus size={16} /> Novo artigo
+            <Plus size={16} /> Nova aula
           </Link>
           <button
             type="button"
@@ -95,51 +102,49 @@ export default function DashboardPage() {
         {loading ? <p className="text-[var(--muted)]">Carregando…</p> : null}
         {error ? <p className="text-red-600">{error}</p> : null}
 
-        {!loading && !articles.length ? (
+        {!loading && !lessons.length ? (
           <div className="rounded-2xl border border-dashed border-[var(--line)] bg-white p-12 text-center">
-            <p className="font-semibold mb-2">Nenhum artigo ainda</p>
-            <Link href="/admin/artigos/novo" className="text-[var(--brand-700)] font-bold">
-              Criar o primeiro →
+            <Video className="mx-auto mb-3 text-[var(--muted)]" />
+            <p className="font-semibold mb-2">Nenhuma aula ainda</p>
+            <Link href="/admin/aulas/novo" className="text-[var(--brand-700)] font-bold">
+              Cadastrar a primeira →
             </Link>
           </div>
         ) : null}
 
         <div className="grid gap-3">
-          {articles.map((a) => (
+          {lessons.map((a) => (
             <article
               key={a.id}
               className="rounded-2xl border border-[var(--line)] bg-white p-4 sm:p-5 flex flex-wrap gap-3 items-center shadow-sm"
             >
-              <div className="text-2xl w-10 text-center">{a.glyph || "📝"}</div>
+              <div className="w-20 h-14 rounded-xl bg-[var(--bg)] border border-[var(--line)] overflow-hidden grid place-items-center shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://img.youtube.com/vi/${a.youtubeId}/hqdefault.jpg`}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="flex-1 min-w-[200px]">
                 <h2 className="font-bold">{a.title}</h2>
-                <p className="text-sm text-[var(--muted)] line-clamp-1">{a.excerpt}</p>
+                <p className="text-sm text-[var(--muted)] line-clamp-1">{a.description}</p>
                 <p className="text-xs text-[var(--muted)] mt-1">
-                  {a.category} · {a.status === "PUBLISHED" ? "Publicado" : "Rascunho"}
-                  {a.featured ? " · Destaque" : ""}
+                  {CAT_LABEL[a.category] || a.category} · {a.duration || "—"} ·{" "}
+                  {a.status === "PUBLISHED" ? "Publicada" : "Rascunho"} · ordem {a.sortOrder}
                 </p>
               </div>
               <div className="flex gap-2">
                 <Link
-                  href={`/admin/artigos/${a.id}`}
-                  className="h-9 px-3 rounded-lg border border-[var(--line)] inline-flex items-center gap-1.5 text-sm font-semibold"
+                  href={`/admin/aulas/${a.id}`}
+                  className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-1.5 text-sm"
                 >
                   <Pencil size={14} /> Editar
                 </Link>
-                {a.status === "PUBLISHED" && a.slug ? (
-                  <a
-                    href={`/post.html?p=${encodeURIComponent(a.slug)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-9 px-3 rounded-lg border border-[var(--line)] inline-flex items-center text-sm font-semibold"
-                  >
-                    Ver
-                  </a>
-                ) : null}
                 <button
                   type="button"
                   onClick={() => onDelete(a.id, a.title)}
-                  className="h-9 px-3 rounded-lg border border-red-200 text-red-600 inline-flex items-center gap-1.5 text-sm font-semibold"
+                  className="h-10 px-3 rounded-xl border border-red-200 text-red-700 font-semibold inline-flex items-center gap-1.5 text-sm"
                 >
                   <Trash2 size={14} /> Excluir
                 </button>

@@ -313,6 +313,10 @@
   font-size: 0.9rem;
 }
 
+.prod-card__body .btn {
+  margin-top: auto;
+}
+
 .prod-card__ref,
 .prod-strip__ref {
   font-size: 0.8rem;
@@ -519,6 +523,8 @@
 }
 
 .prod-strip__card {
+  display: flex;
+  flex-direction: column;
   flex: 0 0 min(260px, 78vw);
   scroll-snap-align: start;
   border: 1px solid var(--line);
@@ -560,8 +566,10 @@
 
 .prod-strip__body {
   padding: 14px 14px 16px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
+  flex: 1;
 }
 
 .prod-strip__cat {
@@ -581,7 +589,11 @@
 
 .prod-strip__body strong {
   font-size: 1.15rem;
-  margin: 2px 0 6px;
+  margin: 2px 0 0;
+}
+
+.prod-strip__body .btn {
+  margin-top: auto;
 }
 
 .prod-empty {
@@ -710,6 +722,11 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 28px;
+}
+
+.pdp__btn-all,
+.pdp__btn-all:hover {
+  color: var(--brand, #ff6a00) !important;
 }
 
 .pdp__desc {

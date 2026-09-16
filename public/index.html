@@ -303,10 +303,11 @@ try{if(localStorage.getItem("ca-theme")==="dark")d.setAttribute("data-theme","da
 <script src="assets/js/api-config.js?v=20260915a"></script>
 <script src="assets/js/data.js?v=20260911a"></script>
 <script src="assets/js/blog-merge.js?v=20260915b"></script>
+<script src="assets/js/aulas-merge.js?v=20260916a"></script>
 <script src="assets/js/main.js?v=20260911a"></script>
 <script>
 (async function(){
-  await CABlogMerge.load();
+  await Promise.all([CABlogMerge.load(), CAAulasMerge.load()]);
   const $ = s => document.querySelector(s);
   const I = window.ICO;
 

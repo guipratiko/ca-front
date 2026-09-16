@@ -123,7 +123,7 @@ export default function ProductDetailPage() {
                     >
                       {product.buttonLabel || "Quero este produto"}
                     </a>
-                    <Link className="btn btn--ghost btn--lg" href="/produtos">
+                    <Link className="btn btn--ghost btn--lg pdp__btn-all" href="/produtos">
                       Ver todos
                     </Link>
                   </div>

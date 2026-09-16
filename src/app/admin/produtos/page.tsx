@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Pencil, Trash2, Package, FileText, Tags } from "lucide-react";
+import { LogOut, Plus, Pencil, Trash2, Package, FileText, Tags, Video } from "lucide-react";
 import {
   Product,
   TOKEN_KEY,
@@ -62,6 +62,12 @@ export default function AdminProductsPage() {
             className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
           >
             <Tags size={16} /> Categorias
+          </Link>
+          <Link
+            href="/admin/aulas"
+            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
+          >
+            <Video size={16} /> Aulas
           </Link>
           <Link
             href="/admin/dashboard"

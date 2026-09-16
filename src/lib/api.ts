@@ -92,6 +92,35 @@ export type CategoryPayload = {
   active?: boolean;
 };
 
+export type OpenLesson = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  youtubeId: string;
+  category: string;
+  duration: string;
+  views: string;
+  sortOrder: number;
+  status: ArticleStatus;
+  publishedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type OpenLessonPayload = {
+  title: string;
+  slug?: string;
+  description: string;
+  youtubeId: string;
+  category: string;
+  duration?: string;
+  views?: string;
+  sortOrder?: number;
+  status?: ArticleStatus;
+  publishedAt?: string | null;
+};
+
 export function productGallery(product: Pick<Product, "image" | "images">): string[] {
   const list = [...(product.images || [])].filter(Boolean);
   if (product.image && !list.includes(product.image)) list.unshift(product.image);
@@ -279,6 +308,41 @@ export async function updateProduct(token: string, id: string, payload: Partial<
 
 export async function deleteProduct(token: string, id: string) {
   return request<{ message: string }>(`/api/products/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function listAdminLessons(token: string) {
+  return request<{ lessons: OpenLesson[] }>("/api/lessons/admin/all", { token });
+}
+
+export async function getAdminLesson(token: string, id: string) {
+  return request<{ lesson: OpenLesson }>(`/api/lessons/admin/${id}`, { token });
+}
+
+export async function createLesson(token: string, payload: OpenLessonPayload) {
+  return request<{ lesson: OpenLesson }>("/api/lessons", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateLesson(
+  token: string,
+  id: string,
+  payload: Partial<OpenLessonPayload>
+) {
+  return request<{ lesson: OpenLesson }>(`/api/lessons/${id}`, {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteLesson(token: string, id: string) {
+  return request<{ message: string }>(`/api/lessons/${id}`, {
     method: "DELETE",
     token,
   });
