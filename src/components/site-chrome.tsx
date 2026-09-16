@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { productsWhatsAppUrl } from "@/lib/api";
 
 const THEME_KEY = "ca-theme";
@@ -74,10 +75,10 @@ export function SiteChrome({
   ] as const;
 
   const logo = isTools ? (
-    <a className="logo logo--tools" href="/produtos" aria-label="CA Tools, vitrine de produtos">
+    <Link className="logo logo--tools" href="/produtos" aria-label="CA Tools, vitrine de produtos">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="logo__img logo__img--tools" src="/assets/img/logo-ca-tools.png" alt="CA Tools" />
-    </a>
+    </Link>
   ) : (
     <a className="logo" href="/index.html" aria-label="CA Cursos, página inicial">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -96,19 +97,31 @@ export function SiteChrome({
         <div className="container header__inner">
           {logo}
           <nav className="nav">
-            {nav.map((item) => (
-              <a key={item.id} href={item.href} className={active === item.id ? "is-active" : undefined}>
-                {item.label}
-              </a>
-            ))}
+            {nav.map((item) =>
+              item.href === "/produtos" ? (
+                <Link key={item.id} href="/produtos" className={active === item.id ? "is-active" : undefined}>
+                  {item.label}
+                </Link>
+              ) : (
+                <a key={item.id} href={item.href} className={active === item.id ? "is-active" : undefined}>
+                  {item.label}
+                </a>
+              )
+            )}
           </nav>
           <div className="header__actions">
             <a className="btn btn--ghost btn--sm" href="/aulas.html">
               Assistir grátis
             </a>
-            <a className="btn btn--primary btn--sm" href={isTools ? "/produtos" : "/cursos.html"}>
-              {isTools ? "Ver produtos" : "Ver cursos"}
-            </a>
+            {isTools ? (
+              <Link className="btn btn--primary btn--sm" href="/produtos">
+                Ver produtos
+              </Link>
+            ) : (
+              <a className="btn btn--primary btn--sm" href="/cursos.html">
+                Ver cursos
+              </a>
+            )}
             <button className="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema" onClick={toggleTheme}>
               <MoonIcon />
               <SunIcon />
@@ -126,19 +139,36 @@ export function SiteChrome({
         </div>
       </header>
       <nav className={`mobile-nav${menuOpen ? " is-open" : ""}`}>
-        {nav.map((item) => (
-          <a
-            key={item.id}
-            href={item.href}
-            className={active === item.id ? "is-active" : undefined}
-            onClick={() => setMenuOpen(false)}
-          >
-            {item.label}
+        {nav.map((item) =>
+          item.href === "/produtos" ? (
+            <Link
+              key={item.id}
+              href="/produtos"
+              className={active === item.id ? "is-active" : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <a
+              key={item.id}
+              href={item.href}
+              className={active === item.id ? "is-active" : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </a>
+          )
+        )}
+        {isTools ? (
+          <Link className="btn btn--primary" href="/produtos" onClick={() => setMenuOpen(false)}>
+            Ver produtos
+          </Link>
+        ) : (
+          <a className="btn btn--primary" href="/cursos.html">
+            Ver cursos
           </a>
-        ))}
-        <a className="btn btn--primary" href={isTools ? "/produtos" : "/cursos.html"}>
-          {isTools ? "Ver produtos" : "Ver cursos"}
-        </a>
+        )}
       </nav>
 
       <main id="conteudo">{children}</main>
@@ -171,7 +201,7 @@ export function SiteChrome({
             <div>
               <h5>Navegação</h5>
               <a href="/cursos.html">Cursos</a>
-              <a href="/produtos">Produtos</a>
+              <Link href="/produtos">Produtos</Link>
               <a href="/blog.html">Blog</a>
               <a href="/contato.html">Contato</a>
             </div>
