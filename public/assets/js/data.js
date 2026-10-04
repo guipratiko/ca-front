@@ -76,13 +76,13 @@ CA.wa = (msg) => {
 /* Categorias -------------------------------------------------------------- */
 CA.categorias = [
   {
-    id:"iniciante", nome:"Iniciante", icone:"📱", desc:"Do zero à bancada",
+    id:"iniciante", nome:"Iniciante", icone:"📱", desc:"Comece do zero e saia cobrando pelo seu primeiro conserto",
     cta:"Ver cursos",
     image:"https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80",
     gradient:"linear-gradient(to top, rgba(15,23,42,.92) 8%, rgba(255,106,0,.55) 100%)"
   },
   {
-    id:"intermediario", nome:"Intermediário", icone:"🔧", desc:"Reparo em placa",
+    id:"intermediario", nome:"Intermediário", icone:"🔧", desc:"Domine leitura de esquema e reballing: o que separa quem troca peça de quem resolve qualquer defeito",
     cta:"Ver cursos",
     image:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
     gradient:"linear-gradient(to top, rgba(15,23,42,.92) 8%, rgba(14,116,144,.65) 100%)"
@@ -121,7 +121,7 @@ CA.cursos = [
     boleto:"Entrada de R$ 1.000,00 + 4 boletos de R$ 350,00",
     reserva:"R$ 300,00 via PIX (descontado do total)",
     link:null,
-    resumo:"Para iniciantes absolutos. Bancada individual, equipamentos da escola e 40 horas 100% práticas para você sair pronto para faturar.",
+    resumo:"Para quem nunca encostou numa chave de precisão. 40h de mão na massa, na sua bancada individual, com os equipamentos da escola - você sai sabendo diagnosticar e já pronto pra cobrar pelo primeiro serviço.",
     para:[
       "Iniciantes absolutos, sem experiência prévia",
       "Quem quer aprender na prática, com bancada individual",
@@ -179,7 +179,7 @@ CA.cursos = [
     acesso:"1 ano",
     preco:497, precoDe:null, parcelas:"12x de R$ 51,40",
     link:"https://pay.hotmart.com/F85214527E?off=2awmskv6",
-    resumo:"Mesmo conteúdo do presencial, em aulas gravadas. Ideal para quem está fora de Goiânia ou tem pouca disponibilidade de horário.",
+    resumo:"O mesmo método do presencial, no seu ritmo. Pra quem não mora em Goiânia ou não pode parar a rotina agora - 1 ano pra assistir, revisar e praticar quando der.",
     para:[
       "Iniciantes, especialmente fora de Goiânia",
       "Quem precisa de flexibilidade de horário",
@@ -227,7 +227,7 @@ CA.cursos = [
     acesso:"Quem faz o presencial ganha acesso ao Intermediário Online",
     preco:2500, precoDe:null, parcelas:"12x de R$ 243,52",
     link:null,
-    resumo:"Aprofunde leitura de esquemas, microssolda, reballing e diagnóstico de circuitos em placas Android e iPhone. Para quem já concluiu o Iniciante ou tem experiência equivalente.",
+    resumo:"O curso que separa quem troca tela de quem conserta placa. Leitura de esquema, microssolda e reballing pra você resolver o que hoje manda pra assistência autorizada - e cobrar por isso.",
     para:[
       "Quem já concluiu o Curso Presencial (Iniciante)",
       "Quem já possui experiência prática equivalente",
@@ -274,7 +274,7 @@ CA.cursos = [
     acesso:"1 ano",
     preco:997, precoDe:null, parcelas:"12x de R$ 103,11",
     link:"https://pay.hotmart.com/I86632000J",
-    resumo:"Mesmo conteúdo do Intermediário presencial, em aulas gravadas. Para quem já tem experiência e prefere o formato online.",
+    resumo:"O conteúdo completo do Intermediário presencial, gravado, pra você assistir quantas vezes precisar até o reballing sair de primeira.",
     para:[
       "Quem já tem experiência prévia em manutenção",
       "Quem prefere ou precisa do formato online",
