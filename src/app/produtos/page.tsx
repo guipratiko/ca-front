@@ -152,7 +152,7 @@ export default function ProdutosPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="prod-hero__logo"
-              src="/assets/img/logo-ca-tools.png"
+              src="/assets/img/logo-ca-tools-footer.png"
               alt="CA Tools"
             />
             <span className="eyebrow">{banner.eyebrow}</span>
