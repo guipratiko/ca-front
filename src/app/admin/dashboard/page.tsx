@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Pencil, Trash2, Package, Tags, Video, GraduationCap } from "lucide-react";
+import { LogOut, Plus, Pencil, Trash2, Package, Tags, Video, GraduationCap, Layout } from "lucide-react";
 import {
   Article,
   TOKEN_KEY,
@@ -56,6 +56,12 @@ export default function DashboardPage() {
             </p>
             <h1 className="text-lg font-extrabold leading-tight">Artigos do blog</h1>
           </div>
+          <Link
+            href="/admin/conteudo"
+            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
+          >
+            <Layout size={16} /> Conteúdo
+          </Link>
           <Link
             href="/admin/cursos"
             className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"

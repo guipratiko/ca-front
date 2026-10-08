@@ -8,13 +8,28 @@ import { ProductShowcaseCarousel } from "@/components/product-showcase-carousel"
 import {
   Category,
   Product,
+  ProductsBannerSettings,
   formatBRL,
+  getPublicSettings,
   listPublicCategories,
   listPublicProducts,
   productGallery,
   productsWhatsAppUrl,
 } from "@/lib/api";
 import "./produtos.css";
+
+const DEFAULT_BANNER: ProductsBannerSettings = {
+  imageUrl: "",
+  eyebrow: "CA Tools · Vitrine oficial",
+  titleBefore: "Produtos para a ",
+  titleHighlight: "bancada",
+  titleAfter: "",
+  lead:
+    "Kits, ferramentas e itens selecionados para quem está começando ou evoluindo na manutenção de celulares - no mesmo padrão visual do site.",
+  primaryCtaLabel: "Ver produtos",
+  primaryCtaHref: "#vitrine",
+  secondaryCtaLabel: "Falar no WhatsApp",
+};
 
 const PRICE_PRESETS = [
   { id: "all", label: "Qualquer preço", min: undefined, max: undefined },
@@ -28,6 +43,7 @@ export default function ProdutosPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [banner, setBanner] = useState<ProductsBannerSettings>(DEFAULT_BANNER);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categoryId, setCategoryId] = useState("Todos");
@@ -56,6 +72,15 @@ export default function ProdutosPage() {
         if (!cancelled) setCategories(catData.categories || []);
       } catch {
         if (!cancelled) setCategories([]);
+      }
+
+      try {
+        const settings = await getPublicSettings();
+        if (!cancelled && settings.productsBanner) {
+          setBanner({ ...DEFAULT_BANNER, ...settings.productsBanner });
+        }
+      } catch {
+        /* mantém default */
       }
     })();
     return () => {
@@ -110,9 +135,18 @@ export default function ProdutosPage() {
     router.push(`/produtos/${slug}`);
   };
 
+  const bannerImage = banner.imageUrl?.trim() || "";
+
   return (
     <SiteChrome active="produtos" brand="catools">
-      <section className="prod-hero">
+      <section
+        className={`prod-hero${bannerImage ? " has-banner-image" : ""}`}
+        style={
+          bannerImage
+            ? ({ ["--prod-banner-image" as string]: `url("${bannerImage}")` } as React.CSSProperties)
+            : undefined
+        }
+      >
         <div className="container">
           <div className="prod-hero__panel">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -121,17 +155,16 @@ export default function ProdutosPage() {
               src="/assets/img/logo-ca-tools.png"
               alt="CA Tools"
             />
-            <span className="eyebrow">CA Tools · Vitrine oficial</span>
+            <span className="eyebrow">{banner.eyebrow}</span>
             <h1>
-              Produtos para a <span className="grad-text">bancada</span>
+              {banner.titleBefore}
+              <span className="grad-text">{banner.titleHighlight}</span>
+              {banner.titleAfter || ""}
             </h1>
-            <p className="lead">
-              Kits, ferramentas e itens selecionados para quem está começando ou evoluindo na
-              manutenção de celulares - no mesmo padrão visual do site.
-            </p>
+            <p className="lead">{banner.lead}</p>
             <div className="prod-hero__cta">
-              <a className="btn btn--primary btn--lg" href="#vitrine">
-                Ver produtos
+              <a className="btn btn--primary btn--lg" href={banner.primaryCtaHref || "#vitrine"}>
+                {banner.primaryCtaLabel}
               </a>
               <a
                 className="btn btn--ghost btn--lg"
@@ -139,7 +172,7 @@ export default function ProdutosPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Falar no WhatsApp
+                {banner.secondaryCtaLabel}
               </a>
             </div>
           </div>

@@ -17,6 +17,15 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.prod-hero.has-banner-image {
+  background-color: #0a0a0d;
+  background-image:
+    linear-gradient(100deg, rgba(10, 10, 13, 0.92) 0%, rgba(10, 10, 13, 0.72) 42%, rgba(10, 10, 13, 0.45) 100%),
+    var(--prod-banner-image);
+  background-size: cover;
+  background-position: center;
+}
+
 .prod-hero__panel {
   display: grid;
   gap: 16px;

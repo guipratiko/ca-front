@@ -464,6 +464,62 @@ export async function deleteCourse(token: string, id: string) {
   });
 }
 
+export type HomeHeroProof = { label: string; detail: string };
+
+export type HomeHeroSettings = {
+  eyebrow: string;
+  titleBefore: string;
+  titleHighlight: string;
+  titleAfter: string;
+  lead: string;
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
+  proof: HomeHeroProof[];
+};
+
+export type ProductsBannerSettings = {
+  imageUrl?: string | null;
+  eyebrow: string;
+  titleBefore: string;
+  titleHighlight: string;
+  titleAfter?: string | null;
+  lead: string;
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  secondaryCtaLabel: string;
+};
+
+export async function getPublicSettings() {
+  return request<{ homeHero: HomeHeroSettings; productsBanner: ProductsBannerSettings }>(
+    "/api/settings/public"
+  );
+}
+
+export async function getAdminSettings(token: string) {
+  return request<{ homeHero: HomeHeroSettings; productsBanner: ProductsBannerSettings }>(
+    "/api/settings/admin",
+    { token }
+  );
+}
+
+export async function updateHomeHero(token: string, payload: HomeHeroSettings) {
+  return request<{ homeHero: HomeHeroSettings }>("/api/settings/home-hero", {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateProductsBanner(token: string, payload: ProductsBannerSettings) {
+  return request<{ productsBanner: ProductsBannerSettings }>("/api/settings/products-banner", {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function uploadImage(token: string, file: File) {
   const form = new FormData();
   form.append("image", file);
