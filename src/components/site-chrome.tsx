@@ -77,7 +77,11 @@ export function SiteChrome({
   const logo = isTools ? (
     <Link className="logo logo--tools" href="/produtos" aria-label="CA Tools, vitrine de produtos">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="logo__img logo__img--tools" src="/assets/img/logo-ca-tools.png" alt="CA Tools" />
+      <img
+        className="logo__img logo__img--tools"
+        src="/assets/img/logo-ca-tools-footer.png"
+        alt="CA Tools"
+      />
     </Link>
   ) : (
     <a className="logo" href="/index.html" aria-label="CA Cursos, página inicial">

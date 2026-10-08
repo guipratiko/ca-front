@@ -121,6 +121,87 @@ export type OpenLessonPayload = {
   publishedAt?: string | null;
 };
 
+export type CourseClass = {
+  periodo?: string;
+  dias?: string;
+  horario?: string;
+  data?: string;
+};
+
+export type CourseModule = {
+  titulo?: string;
+  aulas?: Array<[string, string] | string[]>;
+};
+
+export type Course = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  level: string;
+  glyph: string;
+  badge?: string | null;
+  featured: boolean;
+  hours: number;
+  lessons: number;
+  students: number;
+  rating: number;
+  reviews: number;
+  format: string;
+  access?: string | null;
+  price: number;
+  compareAt?: number | null;
+  installments?: string | null;
+  boleto?: string | null;
+  deposit?: string | null;
+  priceNote?: string | null;
+  link?: string | null;
+  summary: string;
+  forWho: string[];
+  learns: string[];
+  benefits: string[];
+  classes: CourseClass[];
+  modules: CourseModule[];
+  faq: Array<[string, string] | string[]>;
+  sortOrder: number;
+  status: ArticleStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CoursePayload = {
+  title: string;
+  slug?: string;
+  category: string;
+  level?: string;
+  glyph?: string;
+  badge?: string | null;
+  featured?: boolean;
+  hours?: number;
+  lessons?: number;
+  students?: number;
+  rating?: number;
+  reviews?: number;
+  format?: string;
+  access?: string | null;
+  price: number;
+  compareAt?: number | null;
+  installments?: string | null;
+  boleto?: string | null;
+  deposit?: string | null;
+  priceNote?: string | null;
+  link?: string | null;
+  summary: string;
+  forWho?: string[];
+  learns?: string[];
+  benefits?: string[];
+  classes?: CourseClass[];
+  modules?: CourseModule[];
+  faq?: Array<[string, string] | string[]>;
+  sortOrder?: number;
+  status?: ArticleStatus;
+};
+
 export function productGallery(product: Pick<Product, "image" | "images">): string[] {
   const list = [...(product.images || [])].filter(Boolean);
   if (product.image && !list.includes(product.image)) list.unshift(product.image);
@@ -343,6 +424,41 @@ export async function updateLesson(
 
 export async function deleteLesson(token: string, id: string) {
   return request<{ message: string }>(`/api/lessons/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function listAdminCourses(token: string) {
+  return request<{ courses: Course[] }>("/api/courses/admin/all", { token });
+}
+
+export async function getAdminCourse(token: string, id: string) {
+  return request<{ course: Course }>(`/api/courses/admin/${id}`, { token });
+}
+
+export async function createCourse(token: string, payload: CoursePayload) {
+  return request<{ course: Course }>("/api/courses", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateCourse(
+  token: string,
+  id: string,
+  payload: Partial<CoursePayload>
+) {
+  return request<{ course: Course }>(`/api/courses/${id}`, {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCourse(token: string, id: string) {
+  return request<{ message: string }>(`/api/courses/${id}`, {
     method: "DELETE",
     token,
   });

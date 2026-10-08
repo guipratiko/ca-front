@@ -148,10 +148,21 @@ p{ color:var(--muted); }
   background:var(--surface); border:1px solid var(--line);
   color:var(--muted); font-size:.87rem; font-weight:600;
   cursor:pointer; white-space:nowrap;
-  transition:.18s ease;
+  box-sizing:border-box;
+  transform:none;
+  transition:background .18s ease, border-color .18s ease, color .18s ease;
 }
-.chip:hover{ color:var(--text); border-color:var(--line-strong); }
-.chip.is-active{ background:var(--brand-soft); border-color:var(--brand); color:var(--brand); }
+.chip:hover{
+  color:var(--text);
+  border-color:var(--line-strong);
+  transform:none;
+}
+.chip.is-active{
+  background:var(--brand-soft);
+  border-color:var(--brand);
+  color:var(--brand);
+  transform:none;
+}
 
 /* Cards ------------------------------------------------------------------ */
 .card{
@@ -382,11 +393,13 @@ p{ color:var(--muted); }
 }
 .story-card__veil{
   position:absolute; inset:0; z-index:0;
-  background:var(--story-grad);
-  opacity:.82;
+  background:
+    linear-gradient(180deg, rgba(10,12,18,.72) 0%, rgba(10,12,18,.18) 42%, transparent 58%),
+    var(--story-grad);
+  opacity:.9;
   transition:opacity .28s ease;
 }
-.story-card:hover .story-card__veil{ opacity:.92; }
+.story-card:hover .story-card__veil{ opacity:.96; }
 .story-card__body{
   position:relative; z-index:1;
   display:flex; flex-direction:column; justify-content:space-between;
@@ -395,15 +408,18 @@ p{ color:var(--muted); }
 }
 .story-card__cat{
   margin:0 0 8px;
-  font-size:.72rem; font-weight:700;
+  font-size:.78rem; font-weight:800;
   letter-spacing:.14em; text-transform:uppercase;
-  opacity:.86;
+  color:#fff;
+  opacity:1;
+  text-shadow:0 1px 2px rgba(0,0,0,.65), 0 2px 14px rgba(0,0,0,.45);
 }
 .story-card__title{
   margin:0;
   font-size:clamp(1.2rem, 1rem + .7vw, 1.55rem);
   font-weight:800; letter-spacing:-.02em; line-height:1.2;
   color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.45), 0 2px 12px rgba(0,0,0,.3);
 }
 .story-card__text{
   margin:10px 0 0;
@@ -1784,8 +1800,8 @@ img, svg, video, iframe, table, pre{ max-width:100%; }
 .card:hover .course__thumb img, .card:hover .post-card__thumb img{ transform:scale(1.06); }
 
 /* --- Chips e filtros ---------------------------------------------------- */
-.chip{ transition:transform .2s var(--ease-out), background .2s ease, border-color .2s ease, color .2s ease; }
-.chip:hover{ transform:translateY(-2px); }
+.chip:hover,
+.chip.is-active{ transform:none; }
 
 /* --- Foco visível e elegante -------------------------------------------- */
 :focus-visible{ outline:2px solid var(--brand); outline-offset:3px; }
