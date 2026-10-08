@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Pencil, Trash2, Package, FileText, Tags } from "lucide-react";
+import { Plus, Pencil, Trash2, Tags } from "lucide-react";
+import { AdminNav } from "@/components/admin-nav";
 import {
   Category,
   TOKEN_KEY,
@@ -45,11 +45,6 @@ export default function AdminCategoriesPage() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
-
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    router.push("/admin/login");
-  };
 
   const onCreate = async () => {
     const token = localStorage.getItem(TOKEN_KEY);
@@ -114,36 +109,7 @@ export default function AdminCategoriesPage() {
 
   return (
     <main className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-[var(--line)] bg-white/90 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center gap-3">
-          <div className="flex-1">
-            <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[var(--brand)]">
-              CA Tools
-            </p>
-            <h1 className="text-lg font-extrabold leading-tight">Categorias</h1>
-          </div>
-          <Link
-            href="/admin/produtos"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Package size={16} /> Produtos
-          </Link>
-          <Link
-            href="/admin/dashboard"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <FileText size={16} /> Artigos
-          </Link>
-          <button
-            type="button"
-            onClick={logout}
-            className="h-10 w-10 rounded-xl border border-[var(--line)] inline-grid place-items-center"
-            title="Sair"
-          >
-            <LogOut size={16} />
-          </button>
-        </div>
-      </header>
+      <AdminNav title="Categorias" active="categorias" />
 
       <div className="max-w-3xl mx-auto px-5 py-8 space-y-6">
         <div className="rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm space-y-3">

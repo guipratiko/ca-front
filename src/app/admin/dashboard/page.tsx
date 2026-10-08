@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Pencil, Trash2, Package, Tags, Video, GraduationCap, Layout } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { AdminNav } from "@/components/admin-nav";
 import {
   Article,
   TOKEN_KEY,
@@ -29,11 +30,6 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, [router]);
 
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    router.push("/admin/login");
-  };
-
   const onDelete = async (id: string, title: string) => {
     if (!confirm(`Excluir "${title}"?`)) return;
     const token = localStorage.getItem(TOKEN_KEY);
@@ -48,60 +44,18 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-[var(--line)] bg-white/90 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center gap-3">
-          <div className="flex-1">
-            <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[var(--brand)]">
-              CA Cursos
-            </p>
-            <h1 className="text-lg font-extrabold leading-tight">Artigos do blog</h1>
-          </div>
-          <Link
-            href="/admin/conteudo"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Layout size={16} /> Conteúdo
-          </Link>
-          <Link
-            href="/admin/cursos"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <GraduationCap size={16} /> Cursos
-          </Link>
-          <Link
-            href="/admin/produtos"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Package size={16} /> Produtos
-          </Link>
-          <Link
-            href="/admin/aulas"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Video size={16} /> Aulas
-          </Link>
-          <Link
-            href="/admin/categorias"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Tags size={16} /> Categorias
-          </Link>
+      <AdminNav
+        title="Artigos do blog"
+        active="artigos"
+        action={
           <Link
             href="/admin/artigos/novo"
             className="h-10 px-4 rounded-xl bg-[var(--brand)] text-white font-bold inline-flex items-center gap-2"
           >
             <Plus size={16} /> Novo artigo
           </Link>
-          <button
-            type="button"
-            onClick={logout}
-            className="h-10 w-10 rounded-xl border border-[var(--line)] inline-grid place-items-center"
-            title="Sair"
-          >
-            <LogOut size={16} />
-          </button>
-        </div>
-      </header>
+        }
+      />
 
       <div className="max-w-6xl mx-auto px-5 py-8">
         {loading ? <p className="text-[var(--muted)]">Carregando…</p> : null}

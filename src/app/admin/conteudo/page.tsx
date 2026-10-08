@@ -1,19 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  LogOut,
-  Save,
-  Upload,
-  Layout,
-  FileText,
-  GraduationCap,
-  Package,
-  Video,
-  Tags,
-} from "lucide-react";
+import { Save, Upload, Layout, Package } from "lucide-react";
+import { AdminNav } from "@/components/admin-nav";
 import {
   HomeHeroSettings,
   ProductsBannerSettings,
@@ -60,11 +50,6 @@ export default function AdminContentPage() {
       .catch((err) => setError(err instanceof Error ? err.message : "Erro ao carregar"))
       .finally(() => setLoading(false));
   }, [router]);
-
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    router.push("/admin/login");
-  };
 
   const field = "h-11 px-3 rounded-xl border border-[var(--line)] bg-white w-full";
   const area = "min-h-[90px] px-3 py-2 rounded-xl border border-[var(--line)] bg-white w-full";
@@ -127,54 +112,7 @@ export default function AdminContentPage() {
 
   return (
     <main className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-[var(--line)] bg-white/90 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center gap-3 flex-wrap">
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[var(--brand)]">
-              CA Cursos
-            </p>
-            <h1 className="text-lg font-extrabold leading-tight">Conteúdo do site</h1>
-          </div>
-          <Link
-            href="/admin/dashboard"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <FileText size={16} /> Artigos
-          </Link>
-          <Link
-            href="/admin/cursos"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <GraduationCap size={16} /> Cursos
-          </Link>
-          <Link
-            href="/admin/produtos"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Package size={16} /> Produtos
-          </Link>
-          <Link
-            href="/admin/aulas"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Video size={16} /> Aulas
-          </Link>
-          <Link
-            href="/admin/categorias"
-            className="h-10 px-3 rounded-xl border border-[var(--line)] font-semibold inline-flex items-center gap-2 text-sm"
-          >
-            <Tags size={16} /> Categorias
-          </Link>
-          <button
-            type="button"
-            onClick={logout}
-            className="h-10 w-10 rounded-xl border border-[var(--line)] inline-grid place-items-center"
-            title="Sair"
-          >
-            <LogOut size={16} />
-          </button>
-        </div>
-      </header>
+      <AdminNav title="Conteúdo do site" active="conteudo" />
 
       <div className="max-w-6xl mx-auto px-5 py-8 grid gap-10">
         {loading ? <p className="text-[var(--muted)]">Carregando…</p> : null}
