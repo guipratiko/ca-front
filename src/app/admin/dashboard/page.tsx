@@ -10,6 +10,7 @@ import {
   TOKEN_KEY,
   deleteArticle,
   listAdminArticles,
+  usableAdminToken,
 } from "@/lib/api";
 
 export default function DashboardPage() {
@@ -19,7 +20,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = usableAdminToken(localStorage.getItem(TOKEN_KEY));
     if (!token) {
       router.replace("/admin/login");
       return;

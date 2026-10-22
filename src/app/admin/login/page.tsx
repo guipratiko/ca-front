@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { adminLogin, TOKEN_KEY } from "@/lib/api";
+import { adminLogin, clearAdminSession, getAdminSession, TOKEN_KEY, usableAdminToken } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,7 +12,29 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem(TOKEN_KEY)) router.replace("/admin/dashboard");
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("motivo") === "sessao") {
+      setError("Sua sessão expirou. Entre novamente.");
+    }
+
+    const token = usableAdminToken(localStorage.getItem(TOKEN_KEY));
+    if (!token) {
+      clearAdminSession();
+      return;
+    }
+
+    let cancelled = false;
+    getAdminSession(token)
+      .then(() => {
+        if (!cancelled) router.replace("/admin/dashboard");
+      })
+      .catch(() => {
+        clearAdminSession();
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -21,7 +43,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { token } = await adminLogin(email, password);
-      localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(TOKEN_KEY, usableAdminToken(token));
       router.push("/admin/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha no login");

@@ -248,19 +248,49 @@ function resolveApiUrl() {
 
 export const TOKEN_KEY = "cacursos_admin_token";
 
+/** Ignora valores que o localStorage grava quando o token veio vazio. */
+export function usableAdminToken(token?: string | null): string {
+  const value = token?.trim() || "";
+  if (!value || value === "null" || value === "undefined") return "";
+  return value;
+}
+
+export function clearAdminSession() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+function redirectToLogin() {
+  if (typeof window === "undefined") return;
+  if (window.location.pathname.startsWith("/admin/login")) return;
+  window.location.assign("/admin/login?motivo=sessao");
+}
+
 async function request<T>(
   path: string,
   options: RequestInit & { token?: string } = {}
 ): Promise<T> {
   const { token, ...init } = options;
+  const cleanToken = usableAdminToken(token);
+  if (token && !cleanToken) {
+    clearAdminSession();
+    redirectToLogin();
+    throw new Error("Sessão inválida. Entre novamente.");
+  }
+
   const headers = new Headers(init.headers || {});
   if (!headers.has("Content-Type") && init.body) {
     headers.set("Content-Type", "application/json");
   }
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (cleanToken) headers.set("Authorization", `Bearer ${cleanToken}`);
 
   const res = await fetch(`${resolveApiUrl()}${path}`, { ...init, headers });
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401 && cleanToken) {
+    clearAdminSession();
+    redirectToLogin();
+    throw new Error("Sessão expirada. Entre novamente.");
+  }
   if (!res.ok) {
     throw new Error((data && data.error) || `Erro ${res.status}`);
   }
@@ -268,10 +298,18 @@ async function request<T>(
 }
 
 export async function adminLogin(email: string, password: string) {
-  return request<{ token: string; user: { id: string; email: string; name: string } }>(
+  const data = await request<{ token: string; user: { id: string; email: string; name: string } }>(
     "/api/auth/login",
     { method: "POST", body: JSON.stringify({ email, password }) }
   );
+  if (!usableAdminToken(data.token)) {
+    throw new Error("Login não retornou um token válido");
+  }
+  return data;
+}
+
+export async function getAdminSession(token: string) {
+  return request<{ user: { id: string; email: string; name: string } }>("/api/auth/me", { token });
 }
 
 export async function listAdminArticles(token: string) {
